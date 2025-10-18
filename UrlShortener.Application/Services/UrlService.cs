@@ -1,6 +1,6 @@
-﻿using UrlShortener.Application.Abstractions;
-using UrlShortener.Application.Dtos;
-using UrlShortener.Domain;
+﻿using UrlShortener.Application.Dtos;
+using UrlShortener.Application.Interfaces;
+using UrlShortener.Domain.Entities;
 
 namespace UrlShortener.Application.Services;
 

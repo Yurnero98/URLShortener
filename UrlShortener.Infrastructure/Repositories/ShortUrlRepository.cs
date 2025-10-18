@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using UrlShortener.Application.Abstractions;
-using UrlShortener.Domain;
+using UrlShortener.Application.Interfaces;
+using UrlShortener.Domain.Entities;
 
 namespace UrlShortener.Infrastructure.Repositories;
 

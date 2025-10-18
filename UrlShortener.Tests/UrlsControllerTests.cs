@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UrlShortener.Application.Dtos;
 using UrlShortener.Application.Services;
-using UrlShortener.Domain;
+using UrlShortener.Domain.Entities;
 using UrlShortener.Infrastructure;
 using UrlShortener.Infrastructure.Repositories;
 using UrlShortener.Infrastructure.Services;

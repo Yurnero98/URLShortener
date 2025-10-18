@@ -1,0 +1,97 @@
+<div class="page">
+  <div class="bar">
+    <h2 class="title">Short URLs</h2>
+    <div class="auth">
+      <a [href]="aboutUrl" target="_blank" class="btn btn-ghost">About</a>
+      <ng-container *ngIf="userName; else anon">
+        <span class="hello">👋 Hello, <b>{{ userName }}</b></span>
+        <button class="btn btn-ghost" (click)="logout.emit()">Logout</button>
+      </ng-container>
+      <ng-template #anon>
+        <a [routerLink]="[{ outlets: { modal: ['login'] } }]" class="btn btn-primary">Login</a>
+      </ng-template>
+    </div>
+  </div>
+
+  <div class="card">
+  <div class="card__head">
+    <form *ngIf="isAuthed; else hint" (ngSubmit)="create.emit()" class="form">
+      <input
+        [ngModel]="newUrl"
+        (ngModelChange)="newUrlChange.emit($event)"
+        name="url"
+        class="input"
+        placeholder="https://example.com/..."
+        required
+      />
+      <button type="submit" [disabled]="isCreating" class="btn btn-primary">
+        {{ isCreating ? 'Shortening…' : 'Shorten' }}
+      </button>
+    </form>
+    <ng-template #hint>
+      <p class="muted">
+        <a [routerLink]="[{ outlets: { modal: ['login'] } }]" class="link">Log in</a>
+        to create new short URLs.
+      </p>
+    </ng-template>
+  </div>
+
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Original URL</th>
+          <th>Short URL</th>
+          <th *ngIf="isAuthed">Created By</th>     
+          <th *ngIf="isAuthed">Created Date</th>   
+          <th *ngIf="isAuthed"></th>               
+        </tr>
+      </thead>
+
+      <tbody *ngIf="isLoading">
+        <tr *ngFor="let i of [0,1,2]" class="skeleton">
+          <td><div></div></td>
+          <td><div></div></td>
+          <td *ngIf="isAuthed"><div></div></td>
+          <td *ngIf="isAuthed"><div></div></td>
+          <td *ngIf="isAuthed"></td>
+        </tr>
+      </tbody>
+
+      <tbody *ngIf="!isLoading && urls.length === 0">
+        <tr>
+          <td [attr.colspan]="isAuthed ? 5 : 2" class="empty">No URLs yet.</td>
+        </tr>
+      </tbody>
+
+      <tbody *ngIf="!isLoading && urls.length">
+        <tr *ngFor="let u of urls; trackBy: trackById">
+          <td>
+            <a [href]="u.originalUrl" target="_blank" class="link break">{{ u.originalUrl }}</a>
+          </td>
+          <td>
+            <div class="flex items-center gap-3">
+              <a [href]="u.shortUrl" target="_blank" class="link">{{ u.shortUrl }}</a>
+              <button type="button" class="btn btn-ghost btn-xs" (click)="copy.emit(u.shortUrl)">Copy</button>
+            </div>
+          </td>
+
+          <td *ngIf="isAuthed"><span class="chip">{{ u.createdBy }}</span></td>
+          <td *ngIf="isAuthed">{{ u.createdDate | date:'medium' }}</td>
+
+          <td class="right" *ngIf="isAuthed">
+            <button
+              class="btn btn-danger btn-xs"
+              (click)="delete.emit(u.id)"
+              [disabled]="deletingId === u.id"
+              *ngIf="isAdmin || userName === u.createdBy">
+              {{ deletingId === u.id ? 'Deleting…' : 'Delete' }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="error" class="alert">{{ error }}</div>
+</div>

@@ -1,0 +1,44 @@
+
+.page { @apply min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 p-6; }
+.bar  { @apply mx-auto max-w-5xl flex items-center justify-between; }
+.title{ @apply text-2xl font-semibold tracking-tight; }
+.auth { @apply flex items-center gap-3; }
+.hello{ @apply hidden sm:inline text-sm text-slate-500 dark:text-slate-400 mr-2; }
+
+/* card */
+.card { @apply mx-auto max-w-5xl mt-6 bg-white dark:bg-slate-800 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700 rounded-xl overflow-hidden; }
+.card__head { @apply p-4 border-b border-slate-200 dark:border-slate-700; }
+
+/* form */
+.form { @apply flex gap-3; }
+.input { @apply flex-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400; }
+
+/* table */
+.table-wrap { @apply overflow-x-auto; }
+.table { @apply min-w-full text-sm; }
+.table thead tr { @apply text-left text-slate-500 bg-slate-50 dark:bg-slate-900/40; }
+.table th, .table td { @apply px-4 py-3 align-top; }
+.table tbody tr { @apply border-t border-slate-100 dark:border-slate-700; }
+.table tbody tr:hover { @apply bg-slate-50/60 dark:bg-slate-900/40 transition; }
+.right { @apply text-right; }
+.break { @apply break-all; }
+
+/* skeleton */
+.skeleton td div { @apply h-4 rounded bg-slate-200 dark:bg-slate-700; }
+.skeleton td:nth-child(1) div { @apply w-64; }
+.skeleton td:nth-child(2) div { @apply w-40; }
+.skeleton td:nth-child(3) div { @apply w-20; }
+.skeleton td:nth-child(4) div { @apply w-32; }
+
+/* utilities */
+.link  { @apply text-indigo-600 dark:text-indigo-400 hover:underline; }
+.muted { @apply text-sm text-slate-500; }
+.chip  { @apply inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-700 px-2 py-0.5 text-xs; }
+.alert { @apply p-4 text-sm rounded-lg bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-200; }
+
+/* buttons */
+.btn { @apply inline-flex items-center justify-center rounded-lg px-3 py-1.5 text-sm transition; }
+.btn-xs { @apply px-2 py-1 text-xs rounded-md; }
+.btn-primary { @apply bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-60; }
+.btn-danger  { @apply text-red-600 hover:underline disabled:opacity-60; }
+.btn-ghost   { @apply border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800; }

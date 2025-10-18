@@ -1,18 +1,21 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using UrlShortener.Application.Abstractions;
+using UrlShortener.Application.Interfaces;
 using UrlShortener.Application.Services;
 using UrlShortener.Infrastructure;
 using UrlShortener.Infrastructure.Repositories;
 using UrlShortener.Infrastructure.Services;
+using UrlShortener.WebApi.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Controllers
+// MVC + Razor
 builder.Services.AddControllers();
+builder.Services.AddRazorPages();
+builder.Services.AddAntiforgery();
 
-// Swagger 
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -27,24 +30,32 @@ builder.Services.AddSwaggerGen(c =>
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
-            new OpenApiSecurityScheme { Reference = new OpenApiReference
-                { Type = ReferenceType.SecurityScheme, Id = "basic" } },
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "basic" }
+            },
             Array.Empty<string>()
         }
     });
 });
 
-
-// CORS for Angular
-builder.Services.AddCors(o => o.AddPolicy("AllowAngular",
-    p => p.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200")));
+// CORS for Angular 
+builder.Services.AddCors(o => o.AddPolicy("AllowAngular", p =>
+    p.WithOrigins("http://localhost:4200")
+     .AllowAnyHeader()
+     .AllowAnyMethod()
+     .AllowCredentials()
+));
 
 // EF InMemory
-builder.Services.AddDbContext<AppDbContext>(o => o.UseInMemoryDatabase("UrlShortenerDb"));
+builder.Services.AddDbContext<AppDbContext>(o =>
+    o.UseInMemoryDatabase("UrlShortenerDb"));
 
 // Basic Auth
 builder.Services.AddAuthentication("Basic")
-    .AddScheme<AuthenticationSchemeOptions, SimpleAuthHandler>("Basic", null);
+    .AddScheme<AuthenticationSchemeOptions, SimpleAuthHandler>("Basic", _ => { });
+
+builder.Services.AddAuthorization();
 
 // DI
 builder.Services.AddScoped<IShortUrlRepository, ShortUrlRepository>();
@@ -53,27 +64,35 @@ builder.Services.AddScoped<UrlService>();
 
 var app = builder.Build();
 
-// Pipeline
+// Swagger
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else
+{
+    app.UseHsts();
+}
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
 app.UseCors("AllowAngular");
+
+app.UseMiddleware<BasicFromCookieMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapRazorPages();
 app.MapControllers();
 
-// Redirect: /{shortCode}
-app.MapGet("/{shortCode}", async (string shortCode, AppDbContext db) =>
-{
-    var url = await db.ShortUrls.FirstOrDefaultAsync(x => x.ShortCode == shortCode);
-    return url is null ? Results.NotFound() : Results.Redirect(url.OriginalUrl);
-});
+app.MapGet("/{shortCode:regex(^[A-Za-z0-9_-]+$):length(4,32)}",
+    async (string shortCode, AppDbContext db) =>
+    {
+        var url = await db.ShortUrls.FirstOrDefaultAsync(x => x.ShortCode == shortCode);
+        return url is null ? Results.NotFound() : Results.Redirect(url.OriginalUrl);
+    });
 
 app.Run();

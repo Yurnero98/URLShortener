@@ -1,0 +1,52 @@
+﻿@page
+@model UrlShortener.WebApi.Pages.About.IndexModel
+@{
+    ViewData["Title"] = "About";
+    var isAdmin = User?.Identity?.IsAuthenticated == true && User.IsInRole("Admin");
+}
+
+<link rel="stylesheet" href="~/shared/ui.css" asp-append-version="true" />
+
+<div class="page">
+    <a href="http://localhost:4200" class="btn-nav">← Back</a>
+
+    <h1 class="title">About</h1>
+
+    <div class="card">
+        <div class="prose max-w-none">
+            @Html.Raw(Model.DisplayHtml)
+        </div>
+        <div class="muted" style="margin-top:10px">
+            <small>Updated: @Model.UpdatedLocal</small>
+        </div>
+    </div>
+
+    @if (isAdmin)
+    {
+        <div style="height: 20px;"></div>
+
+        <div class="card">
+            <h4>Edit (Admin only)</h4>
+
+            @if (!string.IsNullOrEmpty(Model.StatusMessage))
+            {
+                <div class="alert">@Model.StatusMessage</div>
+            }
+
+            <form method="post">
+                @Html.AntiForgeryToken()
+                <label for="content" class="muted">Content (Markdown)</label>
+                <textarea id="content" name="AboutContent" class="input" rows="14">@Model.EditContent</textarea>
+
+                <div style="height:10px"></div>
+                <button class="btn" type="submit">Save</button>
+            </form>
+        </div>
+    }
+    else
+    {
+        <div class="muted" style="margin-top:12px">
+            Only administrators can edit this page.
+        </div>
+    }
+</div>

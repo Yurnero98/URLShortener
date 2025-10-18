@@ -11,6 +11,7 @@ public class UrlsController(UrlService service) : ControllerBase
 {
     private readonly UrlService _service = service;
 
+    [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> GetAll() => Ok(await _service.GetAllAsync());
 
